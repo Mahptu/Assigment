@@ -1,0 +1,99 @@
+#include <stdio.h>
+#include <stdbool.h>
+#include <stdlib.h>
+#include <time.h>
+void count(int x) {
+	switch(x) {
+		case 0://special cards //
+			printf(" A");
+			break;
+		case 10:
+			printf(" J");
+			break;
+		case 11:
+			printf(" Q");
+			break;
+		case 12:
+			printf(" K");
+			break;
+		default:// from 2 to 10//
+			printf("%d",x+1);
+	}
+}
+int main() {
+	bool c[13][4]={false};//khoi tao mang de danh dau cac quan bai da chia//
+	int t,i,j,x, Min;
+	int numReC=51;//numberOfRemainingCards,the first time=52-1//
+	int labai[52], player[4][13];
+	srand((unsigned)time(NULL)); 
+	//chia bai
+	while(numReC>=0) {
+	x=rand()%52;
+		while(c[x/4][x%4]==true) {//gap o da danh dau//
+			if (x==51) 
+				x=0;//tang den cuoi mang van gap o true-> quay ve dau mang//
+			else 
+				x++;//tang x len 1 va kiem tra//
+		}
+		c[x/4][x%4]=true;
+		labai[numReC]=x;
+		numReC--;
+	}
+	//la bai moi nguoi choi nhan duoc//
+	numReC=0;
+	while(numReC!=52) {
+		player[numReC%4][numReC/4]=labai[numReC];
+		numReC++;
+	}
+	for(i=0; i<4; i++) {
+		for(x=0; x<13; x++) {
+			Min=x;
+			for(j=x+1; j<13; j++) 
+				if(player[i][j]<player[i][Min])
+					Min=j;// tim phan tu mang stt nho nhat //
+				if(Min!=x) { //sap xep cac la bai nho den lon//
+					//doi cho phan tu do voi x//
+					j = player[i][x];
+					player[i][x]=player[i][Min];
+					player[i][Min]=j;
+			}
+		}
+	}
+	for(i=0; i<4; i++) {
+		printf("Nguoi thu %d:\n", i+1);
+		for(x=0; x<13; x++) {
+			count(player[i][x]/4);//tim ra stt//
+			// tim ten tung loai bai//
+			switch(player[i][x]%4) {
+				case 0:
+					printf(" %c ",3);
+					break;
+				case 1:
+					printf(" %c ",4);
+					break;
+				case 2:
+					printf(" %c ",5);
+					break;
+				default:
+					printf(" %c ",6);
+					break;
+			}
+		}
+		printf("\n");
+	}
+	//kiem tra tu quy//
+	printf("\---Kiem Tra Tu Quy---\n");
+	for(i=0; i<4; i++) {
+		t=0;
+		for(x=0; x<13; x++) {			// chi khac nhau ve loai, giong nhau ve stt,3 la so du cua player[i][x]%4 //
+			if (player[i][x]%4==0 && (player[i][x+3]-player[i][x])==3) {
+				printf("Nguoi thu %d co tu quy ", i+1);
+				count(player[i][x]/4);//ten tu quy// 
+				printf("\n");
+				t++;
+			}	
+		}
+		if(t==0) printf("Nguoi thu %d khong co tu quy\n", i+1);
+	}
+	return 0;
+}
